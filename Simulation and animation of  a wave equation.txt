@@ -1,0 +1,54 @@
+# simulate and animate a wave equation using finite difference methods in Python
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+# Parameters
+dx = 0.1  # space increment
+dt = 0.05  # time increment
+t_min = 0.0  # initial time
+t_max = 2.0  # simulate until
+x_min = -5.0  # left bound
+x_max = 5.0   # right bound
+c = 1.0  # speed of sound
+rsq = (c * dt / dx) ** 2
+
+nx = int((x_max - x_min) / dx) + 1
+nt = int((t_max - t_min) / dt) + 2
+u = np.zeros((nt, nx))
+
+# Initial condition
+
+
+def init_fn(x):
+    val = np.exp(-(x**2) / 0.25)
+    return max(0.0, val)
+
+
+for a in range(nx):
+    u[0, a] = init_fn(x_min + a * dx)
+    u[1, a] = u[0, a]
+
+# Simulation
+for t in range(1, nt - 1):
+    for a in range(1, nx - 1):
+        u[t + 1, a] = 2 * (1 - rsq) * u[t, a] - u[t - 1, a] + rsq * (u[t, a - 1] + u[t, a + 1])
+
+# Animation
+fig, ax = plt.subplots()
+ax.set_xlim(x_min, x_max)
+ax.set_ylim(-0.2, 1.2)
+
+line, = ax.plot([], [], 'k')
+
+
+def update(frame):
+    line.set_data(np.linspace(x_min, x_max, nx), u[frame, :])
+    return line,
+
+
+ani = animation.FuncAnimation(fig, update, frames=nt, interval=50, blit=True)
+
+
+plt.show()
