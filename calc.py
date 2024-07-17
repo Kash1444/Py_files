@@ -1,6 +1,6 @@
-
-
 # Calculator
+# Basic calculator using  "+, -, *, /"
+
 
 
 def calc(a, b, op):
